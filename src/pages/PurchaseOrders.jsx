@@ -266,7 +266,25 @@ export default function PurchaseOrders({ navigate, role }) {
       if (!saved) { alert('Error: PO could not be saved. Check if PO number already exists.'); setSaving(false); return }
 
       // Save products to master
-            const savedItems = await Promise.all(poItems.map(async item => {
+             const savedItems = []
+      for (const item of poItems) {
+        let prod = null
+        if (item.product_id) {
+          prod = { id: item.product_id }
+        } else if (item.product_name) {
+          prod = await db.findProduct(item.product_name)
+          if (!prod) prod = await db.saveProduct({ name: item.product_name, default_uom: item.unit_of_measure || 'Each' })
+        }
+        savedItems.push({
+          po_id: saved.id,
+          product_id: prod?.id || null,
+          product_name: item.product_name || '',
+          description: item.product_name || '',
+          unit_rate: parseFloat(item.unit_rate) || 0,
+          total_qty: parseInt(item.total_qty) || 0,
+          unit_of_measure: item.unit_of_measure || 'Each',
+        })
+      }
         let prod = null
         if (item.product_id) {
           prod = { id: item.product_id }
@@ -284,8 +302,7 @@ export default function PurchaseOrders({ navigate, role }) {
           unit_of_measure: item.unit_of_measure || 'Each',
         }
         return row
-      }))
-      if (savedItems.some(i => !i.product_name)) { alert('Error: Product name missing on one or more items'); setSaving(false); return }
+            if (savedItems.some(i => !i.product_name)) { alert('Error: Product name missing on one or more items'); setSaving(false); return }
             const itemsResult = await db.replacePOItems(saved.id, savedItems)
       console.log('Items saved:', itemsResult)
       const savedItemsFromDB = await db.getPOItems(saved.id)

@@ -15,10 +15,11 @@ export const db = {
     const { data } = await supabase.from('products').select('*').eq('id', id).single()
     return data
   },
-  findProduct: async (name) => {
+    findProduct: async (name) => {
     if (!name) return null
     try {
-      const { data } = await supabase.from('products').select('*').ilike('name', name.trim()).limit(1)
+      const { data, error } = await supabase.from('products').select('*').ilike('name', name.trim())
+      if (error) return null
       return data?.[0] || null
     } catch { return null }
   },
