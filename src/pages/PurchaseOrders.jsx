@@ -262,54 +262,19 @@ export default function PurchaseOrders({ navigate, role }) {
     try {
       const data = { ...form, status: editing ? form.status : 'pending_approval' }
       if (!editing) delete data.id
-            const saved = await db.savePO(editing ? { ...data, id: editing } : data)
-      if (!saved) { alert('Error: PO could not be saved. Check if PO number already exists.'); setSaving(false); return }
+      const saved = await db.savePO(editing ? { ...data, id: editing } : data)
 
       // Save products to master
-             const savedItems = []
-      for (const item of poItems) {
-        let prod = null
-        if (item.product_id) {
-          prod = { id: item.product_id }
-        } else if (item.product_name) {
-          prod = await db.findProduct(item.product_name)
-          if (!prod) prod = await db.saveProduct({ name: item.product_name, default_uom: item.unit_of_measure || 'Each' })
-        }
-        savedItems.push({
-          po_id: saved.id,
-          product_id: prod?.id || null,
-          product_name: item.product_name || '',
-          description: item.product_name || '',
-          unit_rate: parseFloat(item.unit_rate) || 0,
-          total_qty: parseInt(item.total_qty) || 0,
-          unit_of_measure: item.unit_of_measure || 'Each',
-        })
-      }
-        let prod = null
-        if (item.product_id) {
-          prod = { id: item.product_id }
-        } else if (item.product_name) {
-          prod = await db.findProduct(item.product_name)
-          if (!prod) prod = await db.saveProduct({ name: item.product_name, default_uom: item.unit_of_measure || 'Each' })
-        }
-                const row = {
-          po_id: saved.id,
-          product_id: prod?.id || null,
-          product_name: item.product_name || '',
-          description: item.product_name || '',
-          unit_rate: parseFloat(item.unit_rate) || 0,
-          total_qty: parseInt(item.total_qty) || 0,
-          unit_of_measure: item.unit_of_measure || 'Each',
-        }
-        return row
-            if (savedItems.some(i => !i.product_name)) { alert('Error: Product name missing on one or more items'); setSaving(false); return }
-            const itemsResult = await db.replacePOItems(saved.id, savedItems)
-      console.log('Items saved:', itemsResult)
+      const savedItems = await Promise.all(poItems.map(async item => {
+        let prod = item.product_id ? { id: item.product_id } : await db.findProduct(item.product_name)
+        if (!prod && item.product_name) prod = await db.saveProduct({ name: item.product_name, default_uom: item.unit_of_measure })
+        return { po_id: saved.id, product_id: prod?.id || null, product_name: item.product_name || "", description: item.product_name || "", unit_rate: parseFloat(item.unit_rate) || 0, total_qty: parseInt(item.total_qty) || 0, unit_of_measure: item.unit_of_measure || "Each" }
+      }))
+      await db.replacePOItems(saved.id, savedItems)
       const savedItemsFromDB = await db.getPOItems(saved.id)
-      console.log('Items from DB:', savedItemsFromDB)
       await db.replaceSchedules(saved.id, schedules.map((s, i) => ({
         ...s, shipment_no: i + 1, promised_qty: parseInt(s.promised_qty) || 0,
-                po_item_id: savedItemsFromDB.length === 1 ? savedItemsFromDB[0]?.id : (savedItemsFromDB.find(si => si.product_name === poItems[i]?.product_name)?.id || null)
+        po_item_id: poItems.length === 1 ? savedItemsFromDB[0]?.id : (savedItemsFromDB.find(si => si.product_name === poItems[schedules.indexOf(s)]?.product_name)?.id || null)
       })))
       await load()
       setShowForm(false)
