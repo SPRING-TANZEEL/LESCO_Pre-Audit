@@ -215,7 +215,7 @@ function BillForm({ billId, onSave, onCancel }) {
         }
         const splits = splitQtyAcrossBatches(qtyEntered, item, itemSchedules, alreadyByBatch)
         for (const split of splits) {
-          const effDeliveryDate = effDate?.date || null
+                    const effDeliveryDate = getEffectiveDeliveryDate(split.promisedDate, callDate, sampleDate, inspCompDate, challanDate, icDate)?.date || null
           const ldCalc = calcBatchLD(split.qtyFromThisBatch, item.unit_rate, split.promisedDate, effDeliveryDate, po.ld_rate)
           const { ldCapped, capReached: cr } = applyLDCap(ldCalc.ldAmount, runningLD, maxLD)
           runningLD += ldCapped
