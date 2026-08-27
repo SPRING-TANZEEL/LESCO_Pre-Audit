@@ -205,7 +205,8 @@ function BillForm({ billId, onSave, onCancel }) {
     for (const [gi, grn] of grns.entries()) {
       const grnItemResults = []
       for (const item of poItems) {
-        const qtyEntered = parseInt(grnItemQtys[`${gi}_${item.id}`]) || 0
+                const qtyEntered = parseInt(grnItemQtys[`${gi}_${item.id}`]) || 0
+        console.log(`GRN ${gi} Item ${item.id} key: ${gi}_${item.id} qty: ${qtyEntered} all keys:`, Object.keys(grnItemQtys))
         if (qtyEntered === 0) continue
         const itemSchedules = schedules.filter(s => s.po_item_id === item.id || !s.po_item_id || poItems.length === 1)
         const alreadyByBatch = {}
@@ -351,16 +352,16 @@ function BillForm({ billId, onSave, onCancel }) {
               <table style={{ width: '100%', fontSize: 12 }}>
                 <thead><tr><th>Product</th><th className="text-right">PO Qty</th><th className="text-right">Delivered</th><th className="text-right">Balance</th></tr></thead>
                 <tbody>
-                                    {poItems.map(item => {
-                    return (
-                      <tr key={item.id}>
-                        <td>{item.product_name}</td>
-                        <td className="text-right">{item.total_qty?.toLocaleString()}</td>
-                        <td className="text-right">{(poBalance?.delivered_qty || 0).toLocaleString()}</td>
-                        <td className="text-right" style={{ fontWeight: 700, color: 'var(--green)' }}>{(item.total_qty - (poBalance?.delivered_qty || 0)).toLocaleString()}</td>
-                      </tr>
-                    )
-                  })}
+                                          {poItems.map(item => (
+                    <tr key={item.id}>
+                      <td>{item.product_name}</td>
+                      <td className="text-right">{item.total_qty?.toLocaleString()}</td>
+                      <td className="text-right">{(poBalance?.delivered_qty || 0).toLocaleString()}</td>
+                      <td className="text-right" style={{ fontWeight: 700, color: 'var(--green)' }}>
+                        {Math.max(0, item.total_qty - (poBalance?.delivered_qty || 0)).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

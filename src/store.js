@@ -126,7 +126,7 @@ export const db = {
       total_qty: parseInt(i.total_qty) || 0,
       unit_of_measure: i.unit_of_measure || 'Each',
     }))
-    console.log('Inserting PO items:', JSON.stringify(rows))
+    
     const { data, error } = await supabase.from('po_items').insert(rows).select()
     if (error) { console.error('PO items insert error:', error.message, error.details); return [] }
     return data || []

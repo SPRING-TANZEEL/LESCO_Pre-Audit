@@ -29,7 +29,7 @@ export default function GSTBills({ navigate }) {
       <div className="card">
         <div className="table-wrap">
           <table>
-            <thead><tr><th>GST Bill No</th><th>Date</th><th>PO No</th><th>Supplier</th><th className="text-right">GST Amount</th><th className="text-right">LD on GST</th><th className="text-right">1/5th</th><th className="text-right">WHT</th><th className="text-right">Net Payable</th></tr></thead>
+            <thead><tr><th>GST Bill No</th><th>Date</th><th>PO No</th><th>Supplier</th><th className="text-right">GST Amount</th><th className="text-right">LD on GST</th><th className="text-right">WHT</th><th className="text-right">Net Payable</th></tr></thead>
             <tbody>
               {allGSTBills.length === 0 && <tr><td colSpan={9} className="text-center text-muted" style={{ padding: 32 }}>No GST bills yet.</td></tr>}
               {allGSTBills.map(g => {
@@ -43,7 +43,6 @@ export default function GSTBills({ navigate }) {
                     <td style={{ maxWidth: 130, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sup?.name}</td>
                     <td className="text-right font-mono">{fmtPKR(g.gst_amount)}</td>
                     <td className="text-right font-mono" style={{ color: g.ld_on_gst > 0 ? 'var(--red)' : 'inherit' }}>{g.ld_on_gst > 0 ? fmtPKR(g.ld_on_gst) : '—'}</td>
-                    <td className="text-right font-mono" style={{ color: 'var(--red)' }}>{fmtPKR(g.deduction_1_5th)}</td>
                     <td className="text-right font-mono">{fmtPKR(g.wht_amount)}</td>
                     <td className="text-right font-mono"><strong>{fmtPKR(g.net_payable)}</strong></td>
                   </tr>
