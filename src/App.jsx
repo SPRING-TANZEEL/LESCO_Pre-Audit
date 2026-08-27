@@ -37,7 +37,7 @@ export default function App() {
       case 'suppliers': return <Suppliers />
       case 'pos': return <PurchaseOrders navigate={navigate} role={role} />
       case 'po-detail': return <PODetail poId={context.poId} navigate={navigate} />
-      case 'supply-bills': return <SupplyBills navigate={navigate} />
+            case 'supply-bills': return <SupplyBills navigate={navigate} role={role} />
       case 'gst-bills': return <GSTBills navigate={navigate} />
       case 'print': return <PreAuditPrint billId={context.billId} navigate={navigate} />
       case 'test-data': return <TestData navigate={navigate} />

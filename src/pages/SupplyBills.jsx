@@ -9,7 +9,7 @@ import {
 const EMPTY_GRN = { grn_number: '', grn_date: '', consignee_store: '' }
 
 // ── LIST VIEW ─────────────────────────────────────────────────
-export default function SupplyBills({ navigate }) {
+export default function SupplyBills({ navigate, role }) {
   const [view, setView] = useState('list')
   const [allBills, setAllBills] = useState([])
   const [pos, setPOs] = useState([])
@@ -62,7 +62,13 @@ export default function SupplyBills({ navigate }) {
                     <td><span className={`badge badge-${b.status === 'verified' ? 'green' : 'amber'}`}>{b.status}</span></td>
                     <td>
                       <div className="flex gap-2">
-                        <button className="btn btn-secondary btn-sm" onClick={() => { setEditBillId(b.id); setView('edit') }}>Edit</button>
+                                                <button className="btn btn-secondary btn-sm" onClick={() => { setEditBillId(b.id); setView('edit') }}>Edit</button>
+                        {role === 'accounts_officer' && b.status === 'pending' && (
+                          <button className="btn btn-success btn-sm" onClick={async () => {
+                            await db.saveBill({ id: b.id, po_id: b.po_id, bill_number: b.bill_number, bill_date: b.bill_date, status: 'verified' })
+                            await load()
+                          }}>✓ Verify</button>
+                        )}
                         <button className="btn btn-primary btn-sm" onClick={() => navigate('print', { billId: b.id })}>Print</button>
                       </div>
                     </td>
