@@ -106,15 +106,19 @@ export const db = {
     replacePOItems: async (poId, list) => {
     await supabase.from('po_items').delete().eq('po_id', poId)
     if (list.length === 0) return []
-        const rows = list.map(({ id, ...i }) => ({
-      po_id: poId,
-      product_id: i.product_id || null,
-      product_name: i.product_name || '',
-      description: i.product_name || i.description || '',
-      unit_rate: parseFloat(i.unit_rate) || 0,
-      total_qty: parseInt(i.total_qty) || 0,
-      unit_of_measure: i.unit_of_measure || 'Each',
-    }))
+        const rows = list.map(i => {
+      const row = {
+        po_id: poId,
+        product_id: i.product_id || null,
+        product_name: i.product_name || '',
+        description: i.product_name || i.description || '',
+        unit_rate: parseFloat(i.unit_rate) || 0,
+        total_qty: parseInt(i.total_qty) || 0,
+        unit_of_measure: i.unit_of_measure || 'Each',
+      }
+      return row
+    })
+    console.log('Inserting rows:', JSON.stringify(rows))
     const { data, error } = await supabase.from('po_items').insert(rows).select()
     if (error) { console.error('PO items insert error:', error.message, error.details); return [] }
     return data || []
