@@ -75,8 +75,8 @@ export const db = {
     const { data } = await supabase.from('purchase_orders').select('*').eq('id', id).single()
     return data
   },
-  searchPOs: async (q) => {
-    const { data } = await supabase.from('purchase_orders').select('*, suppliers(name)').ilike('po_number', `%${q}%`)
+    searchPOs: async (q) => {
+    const { data } = await supabase.from('purchase_orders').select('*').or(`po_number.ilike.%${q}%`)
     return data || []
   },
     savePO: async (data) => {
