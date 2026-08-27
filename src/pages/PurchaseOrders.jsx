@@ -285,8 +285,10 @@ export default function PurchaseOrders({ navigate, role }) {
         }
       }))
       if (savedItems.some(i => !i.product_name)) { alert('Error: Product name missing on one or more items'); setSaving(false); return }
-      await db.replacePOItems(saved.id, savedItems)
+            const itemsResult = await db.replacePOItems(saved.id, savedItems)
+      console.log('Items saved:', itemsResult)
       const savedItemsFromDB = await db.getPOItems(saved.id)
+      console.log('Items from DB:', savedItemsFromDB)
       await db.replaceSchedules(saved.id, schedules.map((s, i) => ({
         ...s, shipment_no: i + 1, promised_qty: parseInt(s.promised_qty) || 0,
         po_item_id: poItems.length === 1 ? savedItemsFromDB[0]?.id : (savedItemsFromDB.find(si => si.product_name === poItems[schedules.indexOf(s)]?.product_name)?.id || null)

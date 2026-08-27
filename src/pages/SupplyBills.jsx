@@ -351,14 +351,13 @@ function BillForm({ billId, onSave, onCancel }) {
               <table style={{ width: '100%', fontSize: 12 }}>
                 <thead><tr><th>Product</th><th className="text-right">PO Qty</th><th className="text-right">Delivered</th><th className="text-right">Balance</th></tr></thead>
                 <tbody>
-                  {poItems.map(item => {
-                    const balance = item.total_qty - (poBalance?.delivered_qty || 0)
+                                    {poItems.map(item => {
                     return (
                       <tr key={item.id}>
                         <td>{item.product_name}</td>
                         <td className="text-right">{item.total_qty?.toLocaleString()}</td>
-                        <td className="text-right">—</td>
-                        <td className="text-right" style={{ fontWeight: 700, color: 'var(--green)' }}>{item.total_qty?.toLocaleString()}</td>
+                        <td className="text-right">{(poBalance?.delivered_qty || 0).toLocaleString()}</td>
+                        <td className="text-right" style={{ fontWeight: 700, color: 'var(--green)' }}>{(item.total_qty - (poBalance?.delivered_qty || 0)).toLocaleString()}</td>
                       </tr>
                     )
                   })}
