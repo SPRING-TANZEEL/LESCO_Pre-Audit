@@ -128,7 +128,7 @@ function GSTBillForm({ onSave, onCancel }) {
       await db.saveGSTBill({
         po_id: selectedPO.id, gst_bill_number: gstBillNo, gst_bill_date: gstBillDate,
         gst_amount: calcResult.gstAmount, ld_on_gst: calcResult.ldOnGST,
-        deduction_1_5th: 0,
+        
         wht_cert_no: whtInfo.certNo, wht_amount: calcResult.whtAmount, net_payable: calcResult.netPayable,
       }, selectedGRNIds)
       onSave()
@@ -176,7 +176,7 @@ function GSTBillForm({ onSave, onCancel }) {
             </div>
             <div className="card-body">
               <div className={`alert ${whtInfo.isExemption ? 'alert-success' : 'alert-info'}`} style={{ marginBottom: 16 }}>
-                <strong>WHT Rate Today: {whtInfo.rate}%</strong>{whtInfo.isExemption ? ` — Cert: ${whtInfo.certNo}` : ' — Default rate'}
+                              <strong>WHT Rate Today: {whtInfo.rate}%</strong>{whtInfo.isExemption ? ` — Cert: ${whtInfo.certNo || ''}` : ' — Default rate'}
               </div>
               <div className="form-grid">
                 <div className="field"><label>GST Bill Number *</label><input required value={gstBillNo} onChange={e => { setGSTBillNo(e.target.value); setCalcResult(null) }} /></div>
