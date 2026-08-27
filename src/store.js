@@ -136,13 +136,16 @@ export const db = {
     const { data } = await supabase.from('inspection_certificates').select('*').eq('po_id', poId).eq('ic_number', icNo).single()
     return data
   },
-  saveIC: async (data) => {
+    saveIC: async (data) => {
     const { id, ...rest } = data
+    const clean = Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, v === '' ? null : v]))
     if (id) {
-      const { data: d } = await supabase.from('inspection_certificates').update(rest).eq('id', id).select().single()
+      const { data: d, error } = await supabase.from('inspection_certificates').update(clean).eq('id', id).select().single()
+      if (error) { console.error('IC update error:', error.message); return null }
       return d
     }
-    const { data: d } = await supabase.from('inspection_certificates').insert(rest).select().single()
+    const { data: d, error } = await supabase.from('inspection_certificates').insert(clean).select().single()
+    if (error) { console.error('IC insert error:', error.message); return null }
     return d
   },
   getICUsedQty: async (icId, excludeBillId = null) => {
@@ -165,13 +168,16 @@ export const db = {
     const { data } = await supabase.from('supply_bills').select('*').eq('id', id).single()
     return data
   },
-  saveBill: async (data) => {
+    saveBill: async (data) => {
     const { id, ...rest } = data
+    const clean = Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, v === '' ? null : v]))
     if (id) {
-      const { data: d } = await supabase.from('supply_bills').update(rest).eq('id', id).select().single()
+      const { data: d, error } = await supabase.from('supply_bills').update(clean).eq('id', id).select().single()
+      if (error) { console.error('Bill update error:', error.message); return null }
       return d
     }
-    const { data: d } = await supabase.from('supply_bills').insert(rest).select().single()
+    const { data: d, error } = await supabase.from('supply_bills').insert(clean).select().single()
+    if (error) { console.error('Bill insert error:', error.message); return null }
     return d
   },
 
