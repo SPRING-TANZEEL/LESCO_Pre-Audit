@@ -106,7 +106,7 @@ export const db = {
     replacePOItems: async (poId, list) => {
     await supabase.from('po_items').delete().eq('po_id', poId)
     if (list.length === 0) return []
-    const rows = list.map(i => ({
+        const rows = list.map(({ id, ...i }) => ({
       po_id: poId,
       product_id: i.product_id || null,
       product_name: i.product_name || '',
